@@ -102,7 +102,7 @@ class Tracker:
             state = state.lower() 
             
             #get state image
-            im = r"C:\Users\vinee\Python\CovidTrakr\state" + state + ".png"
+            im = r"state" + state + ".png"
             self.placeImage(im,80,70)
             
             #create "back" button
@@ -111,9 +111,9 @@ class Tracker:
             sel.place(x=855,y=50,anchor=tk.CENTER)
             
             #create frames for data and news
-            im = r"C:\Users\vinee\Python\CovidTrakr\frame1.png"
+            im = r"frame1.png"
             self.placeImage(im,750,350)
-            im = r"C:\Users\vinee\Python\CovidTrakr\frame2.png"
+            im = r"frame2.png"
             self.placeImage(im,300,448)
             
             #gets cases and deaths
@@ -146,7 +146,7 @@ class Tracker:
     #create main page widgits
     def mainInterface(self):
         #create main page image
-        im = r"C:\Users\vinee\Python\CovidTrakr\MainScreen.png"
+        im = r"MainScreen.png"
         self.placeImage(im,450,200)
 
         #drop down - user selects state from here
@@ -159,9 +159,6 @@ class Tracker:
         buttonCaller = partial(self.changeInterfaceToState,state)
         sel = tk.Button(self.root,text="Select",padx = 10, pady = 5, fg = "white",bg="#691C1C",command = buttonCaller)
         sel.place(x=450,y=400,anchor=tk.CENTER)
-
-
-
 
 
 t = Tracker()
