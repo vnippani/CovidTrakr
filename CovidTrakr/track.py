@@ -8,8 +8,9 @@ from tkinter import PhotoImage
 import requests
 from bs4 import BeautifulSoup
 
-from parseDt import getNumDataSection
 import os
+
+
 
 class Tracker:
     root = tk.Tk()
