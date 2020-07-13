@@ -13,21 +13,19 @@ def getNumDataSection(dataSec,data):
         index = data.find(dataSec)
         if index != -1:
             num = ''
-            rem = ''
-            data = data.replace(dataSec,'')
-            for i in data:
-                order = ord(i)
-                if (order < 48 or order > 57) and order != 46:
-                    rem = rem + i
-                else:
-                    break
-            data = data.replace(rem,'')
-            for i in data:
-                order = ord(i)
+            i = index + len(dataSec)
+            while(i < len(data)):
+                order = ord(data[i])
+                if not ((order < 48 or order > 57) and order != 46):
+                    break   
+                i = i + 1                 
+            while(i < len(data)):
+                order = ord(data[i])
                 if (order >= 48 and order <= 57) or order == 46 or order == 44:
-                    num = num + i
+                    num = num + data[i]
                 else:
                     break
+                i = i + 1 
             return num
 
 

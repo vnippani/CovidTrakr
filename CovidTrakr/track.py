@@ -34,7 +34,12 @@ class Tracker:
         list = self.root.place_slaves()
         for l in list:
             l.place_forget()
-            
+    
+    #switch back to main interface
+    def changeInterfaceToMain(self):
+        self.clear()
+        self.mainInterface()
+        
     #change to a state
     def changeInterfaceToState(self,dropDownText):
         if(dropDownText.get() != "---"):
@@ -61,6 +66,8 @@ class Tracker:
                 state = "South-Dakota"
             elif state == "New Hampshire":
                 state = "New-Hampshire"
+            elif state == "West Virginia":
+                state = "West-Virginia"
             
             state = state.lower() 
             
@@ -68,13 +75,32 @@ class Tracker:
             im = r"C:\Users\vinee\Python\CovidTrakr\state" + state + ".png"
             self.placeImage(im,80,70)
             
-            ###add code to create frames for data and news
+            #create "back" button
+            buttonCaller = partial(self.changeInterfaceToMain)
+            sel = tk.Button(self.root,text="Back",padx = 10, pady = 5, fg = "white",bg="#691C1C",command = buttonCaller)
+            sel.place(x=855,y=50,anchor=tk.CENTER)
+            
+            #create frames for data and news
             im = r"C:\Users\vinee\Python\CovidTrakr\frame1.png"
             self.placeImage(im,750,350)
+            im = r"C:\Users\vinee\Python\CovidTrakr\frame2.png"
+            self.placeImage(im,300,448)
             
-            self.getStateInfo(state)
+            #gets cases and deaths
+            stats = self.getStateInfo(state)
+            
+            #print data to screen
+            casesD = "Cases: " + stats[0]
+            deathsD = "Deaths: " + stats[1]
+            casesText = Label(text=casesD)     
+            deathsText = Label(text=deathsD)   
+            casesText.config(font=("Times New Roman", 22))
+            deathsText.config(font=("Times New Roman", 20))
+            casesText.place(x=750,y=150,anchor=tk.CENTER)  
+            deathsText.place(x=750,y=200,anchor=tk.CENTER)  
             
             
+    
     #Get info for each state from the internet
     def getStateInfo(self,state):
         headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"}
@@ -83,8 +109,8 @@ class Tracker:
         html = BeautifulSoup(page.content, 'html.parser')
         text = html.find('div', {'class': 'counts svelte-9rb9hv'}).get_text()
         cases = getNumDataSection("Total cases",text)
-        ###add text to get deaths and display both total cases and deaths
-        
+        deaths = getNumDataSection("Deaths",text)
+        return [cases,deaths]
             
     
     #create main page widgits
@@ -96,7 +122,7 @@ class Tracker:
         #drop down - user selects state from here
         state = tk.StringVar()
         state.set("---")
-        drop = tk.OptionMenu(self.root,state,"---","Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Minor Outlying Islands", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "U.S. Virgin Islands", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming")
+        drop = tk.OptionMenu(self.root,state,"---","Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming")
         drop.place(x=450,y=450,anchor=tk.CENTER)
 
         #select button - pressing will send you to desired state info
