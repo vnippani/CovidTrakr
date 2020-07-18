@@ -5,12 +5,16 @@ from tkinter import Label
 from functools import partial
 from tkinter import PhotoImage
 
-import requests
-from bs4 import BeautifulSoup
 
+from bs4 import BeautifulSoup
+import requests
 import os
 
 
+os.chdir("C:/Users/vinee/Python/CovidTrakr")
+
+THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+my_file = os.path.join(THIS_FOLDER, 'TrakrFace.png')
 def stripToNum(textToStrip):
     if isinstance(textToStrip, str):
         #every "i" value is a single char in the string price. ord() gets the ascii values and sees if they
@@ -52,7 +56,7 @@ class Tracker:
         self.mainInterface()
         self.root.mainloop()
        
-    #place an image on the canvas 
+    #shortcut function to place an image on the canvas 
     def placeImage(self,im,xPos,yPos):
         photo = tk.PhotoImage(file = im)
         label = Label(image = photo, borderwidth=0, highlightthickness=0)
@@ -119,34 +123,53 @@ class Tracker:
             #gets cases and deaths
             stats = self.getStateInfo(state)
             
-            #print data to screen
-            casesD = "Cases: " + stats[0]
-            deathsD = "Deaths: " + stats[1]
-            casesText = Label(text=casesD)     
+            #print data to screen         
+            casesD = "Total Cases: " + stats[0]
+            nCasesD = "New Cases: " + stats[1]
+            deathsD = "Total Deaths: " + stats[2]
+            nDeathsD = "New Deaths: " + stats[3]
+            
+            casesText = Label(text=casesD)   
+            nCasesText = Label(text = nCasesD)  
             deathsText = Label(text=deathsD)   
-            casesText.config(font=("Times New Roman", 22))
+            nDeathsText = Label(text = nDeathsD) 
+            
+            casesText.config(font=("Times New Roman", 20))
+            nCasesText.config(font=("Times New Roman", 20))
             deathsText.config(font=("Times New Roman", 20))
+            nDeathsText.config(font=("Times New Roman", 20))
+            
             casesText.place(x=750,y=150,anchor=tk.CENTER)  
-            deathsText.place(x=750,y=200,anchor=tk.CENTER)  
+            nCasesText.place(x=750,y=200,anchor=tk.CENTER)  
+            deathsText.place(x=750,y=250,anchor=tk.CENTER)    
+            nDeathsText.place(x=750,y=300,anchor=tk.CENTER)  
             
-            
-    
     #Get info for each state from the internet
     def getStateInfo(self,state):
         headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"}
-        URL = "https://www.nytimes.com/interactive/2020/us/" + state + "-coronavirus-cases.html"
+        URL = "https://www.worldometers.info/coronavirus/usa/texas"
         page = requests.get(URL,headers=headers)
-        html = BeautifulSoup(page.content, 'html.parser')
-        text = html.find('div', {'class': 'counts svelte-9rb9hv'}).get_text()
-        cases = getNumDataSection("Total cases",text)
-        deaths = getNumDataSection("Deaths",text)
-        return [cases,deaths]
-            
+        html = BeautifulSoup(page.content, 'html.parser')  #get page content
+        tableData = html.find(id = 'usa_table_countries_today')  #find table 
+        content = tableData.find_all('td')  #get table data cells
+        
+        i = 0
+        data = []
+        for entries in content:
+            data.append(entries.text.strip())
+            i = i + 1
+            if i > 4:
+                break
+        data.pop(0)
+        #remove "+"
+        data[1] = data[1][1:]
+        data[3] = data[3][1:]
+        return data
     
     #create main page widgits
     def mainInterface(self):
         #create main page image
-        im = r"MainScreen.png"
+        im = "TrakrFace.png"
         self.placeImage(im,450,200)
 
         #drop down - user selects state from here
