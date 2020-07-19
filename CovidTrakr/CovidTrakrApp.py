@@ -81,6 +81,9 @@ class Tracker:
             self.clear()
             state = dropDownText.get() 
             
+            #get cases and deaths
+            stats = self.getStateInfo(state)
+            print(stats)
             #If state name is two words, make into one word
             if state == "New York":
                 state = "New-York"
@@ -117,51 +120,56 @@ class Tracker:
             #create frames for data and news
             im = r"frame1.png"
             self.placeImage(im,750,350)
-            im = r"frame2.png"
-            self.placeImage(im,300,448)
-            
-            #gets cases and deaths
-            stats = self.getStateInfo(state)
             
             #print data to screen         
             casesD = "Total Cases: " + stats[0]
-            nCasesD = "New Cases: " + stats[1]
-            deathsD = "Total Deaths: " + stats[2]
-            nDeathsD = "New Deaths: " + stats[3]
-            
-            casesText = Label(text=casesD)   
-            nCasesText = Label(text = nCasesD)  
-            deathsText = Label(text=deathsD)   
-            nDeathsText = Label(text = nDeathsD) 
-            
+            casesText = Label(text=casesD)  
             casesText.config(font=("Times New Roman", 20))
-            nCasesText.config(font=("Times New Roman", 20))
-            deathsText.config(font=("Times New Roman", 20))
-            nDeathsText.config(font=("Times New Roman", 20))
-            
             casesText.place(x=750,y=150,anchor=tk.CENTER)  
-            nCasesText.place(x=750,y=200,anchor=tk.CENTER)  
-            deathsText.place(x=750,y=250,anchor=tk.CENTER)    
-            nDeathsText.place(x=750,y=300,anchor=tk.CENTER)  
+        
+            if stats[1] != '':
+                nCasesD = "New Cases: " + stats[1]
+                nCasesText = Label(text = nCasesD) 
+                nCasesText.config(font=("Times New Roman", 20))
+                nCasesText.place(x=750,y=200,anchor=tk.CENTER)
             
+            deathsD = "Total Deaths: " + stats[2]
+            deathsText = Label(text=deathsD)
+            deathsText.config(font=("Times New Roman", 20))
+            deathsText.place(x=750,y=250,anchor=tk.CENTER)
+            print(stats[3])
+            print("hi")
+            if stats[3] != '':
+                nDeathsD = "New Deaths: " + stats[3]
+                nDeathsText = Label(text = nDeathsD) 
+                nDeathsText.config(font=("Times New Roman", 20))
+                nDeathsText.place(x=750,y=300,anchor=tk.CENTER)    
+             
     #Get info for each state from the internet
     def getStateInfo(self,state):
         headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"}
-        URL = "https://www.worldometers.info/coronavirus/usa/texas"
+        URL = "https://www.worldometers.info/coronavirus/country/us"
         page = requests.get(URL,headers=headers)
         html = BeautifulSoup(page.content, 'html.parser')  #get page content
         tableData = html.find(id = 'usa_table_countries_today')  #find table 
         content = tableData.find_all('td')  #get table data cells
-        
+
         i = 0
+        check = False
         data = []
         for entries in content:
-            data.append(entries.text.strip())
-            i = i + 1
-            if i > 4:
-                break
+            t = entries.text.strip()
+            if state == t and not check:
+                check = True
+            if check:
+                data.append(entries.text.strip())
+                i = i + 1
+                if i > 4:
+                    break
+        #remove state name
         data.pop(0)
-        #remove "+"
+        print(data)
+        #remove + signs
         data[1] = data[1][1:]
         data[3] = data[3][1:]
         return data
